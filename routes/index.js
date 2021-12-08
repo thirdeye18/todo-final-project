@@ -20,26 +20,27 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     router.use(bodyParser.urlencoded({ extended: true }));
 
     router.get('/', (req, res) => {
-      destinations.find().toArray()
+      items.find().toArray()
       .then(results => {
-        //console.log({destinations: results});
+        console.log({items: results});
         res.render('index', {
-        destinations: results,
+        index: results,
         isAuthenticated: req.oidc.isAuthenticated()
         })
       })
       .catch(err => console.log(err))
     })
 
-    //adding destinations to the list
-    router.post('/addDestination', (req, res) => {
+    //adding items to the list
+    router.post('/addItem', (req, res) => {
       destinations.insertOne(req.body)
       .then(result => {
         res.redirect('/')
       })
       .catch(err => console.error(err))
     })
+  })
   //catching promise error for MongoClient connect
   .catch(error => { console.error(error) })
 
-  module.exports = router;
+module.exports = router;
