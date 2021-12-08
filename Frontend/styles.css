@@ -29,14 +29,9 @@ body{
 
 #logInBtn{
     position: relative;
-    bottom: 100px; 
-    left: 1326px; 
-}
-
-#signUpBtn{
-    position: relative;
-    left: 1430px;
-    bottom: 150px;
+    bottom: 150px; 
+    left: 1426px; 
+    color: black;
 }
 
 #navbar{
