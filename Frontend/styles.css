@@ -15,12 +15,7 @@ body{
 .form-control{
     width: 500px;
 }
-#signInBtn{
-    position: relative;
-    bottom: 160px;
-    left: 1436px;
-    color:lightgrey;
-}
+
 #signOutBtn{
     position: relative;
     left: 1430px;
@@ -31,7 +26,8 @@ body{
     position: relative;
     bottom: 150px; 
     left: 1426px; 
-    color: black;
+
+    color:white;
 }
 
 #navbar{
