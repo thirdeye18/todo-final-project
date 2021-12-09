@@ -4,7 +4,7 @@ const bodyParser= require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config({path:'./.env'});
 
-const MongoClient = require('mongodb').MongoClient;
+const {MongoClient, ObjectId} = require('mongodb');
 const uri = `mongodb+srv://thirdeye18:${process.env.MONGO_PW}@cluster0.opwsp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
 MongoClient.connect(uri, { useUnifiedTopology: true })
@@ -26,28 +26,35 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     // ========================
 
     router.get('/todo', async (req, res) => {
-      const data = await items.find({}).toArray();
+      const complete = req.query.complete;
+      const data = await items.find({complete: complete}).toArray();
       res.send(data);
     })
 
     router.post('/todo', async(req, res) => {
-      const {itemName, dueDate} = req.body
+      const {itemName, dueDate, complete} = req.body
 
-      if(!itemName || name.length === 0) {
-        return res.status(400).json({message: "Need both name and location"})
+      if(!itemName || name.length === 0 || !complete || complete.length ===0) {
+        return res.status(400).json({message: "Need name and complete status!"})
       }
 
-      const item = {itemName, dueDate};
+      const item = {itemName, complete};
+
+      if(dueDate && dueDate.length !== 0) {
+        item.dueDate = dueDate;
+      }else {
+        item.dueDate = "No date selected";
+      }
 
       items.insertOne(item)
         .then(value => {
-          res.redirect(303, '/todo')
+          res.redirect(303, '/todo?complete=false')
         })
         .catch(error => console.error(error))
     })
 
     router.put('/todo', async(req, res) => {
-      const{_id, itemName, dueDate} = req.body;
+      const{_id, itemName, dueDate, complete} = req.body;
       const newItem = {};
       if(itemName && name.length !== 0) {
         newItem.name = itemName;
@@ -55,9 +62,12 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
       if(dueDate && dueDate.length !== 0) {
         newItem.dueDate = dueDate;
       }
+      if(complete && complete.length !== 0) {
+        newItem.complete = complete;
+      }
       items.updateOne({_id: ObjectId(_id)}, {$set: newItem})
         .then(() => {
-          res.redirect(303, '/todo');
+          res.redirect(303, '/todo?complete=false');
         })
         .catch(error => console.error(error))
     })
@@ -72,9 +82,9 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
 
     router.delete('todo/:id', (req, res) => {
       const itemId = req.params.id;
-      destinations.deleteOne({_id: ObjectId(destId)})
+      items.deleteOne({_id: ObjectId(itemId)})
         .then(() => {
-          res.redirect(303, '/todo');
+          res.redirect(303, '/todo?complete=false');
         })
         .catch(error => console.error(error))
     })
