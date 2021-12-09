@@ -56,14 +56,15 @@ function submitForm(event) {
 
 function renderCards(list) {
     const todoListContainer = document.getElementById("list-container");
-
+ 
     todoListContainer.innerHTML = "";
-
+  
     list.forEach((item) => {
       const { _id, itemName, dueDate, } = item;
-
+  
       const card = document.createElement("div");
       card.classList.add("card w-75");
+      
 
       card.innerHTML = `
                   <div id=${_id} class="card-body">
@@ -150,3 +151,4 @@ function handleDelete(event) {
         renderCards(destinations);
     });
 }
+

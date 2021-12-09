@@ -24,8 +24,9 @@ body{
 
 #logInBtn{
     position: relative;
-    bottom: 150px;
-    left: 1426px;
+    bottom: 150px; 
+    left: 1426px; 
+
     color:white;
 }
 
