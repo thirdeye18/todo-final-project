@@ -1,4 +1,4 @@
-#header{
+/* #header{
     text-align: center;
     background-color: darkgray;
     padding: 50px;
@@ -38,4 +38,13 @@ body{
 .welcome{
     text-align: center;
     font-size: 200px;
+} */
+
+#statusButtons{
+    display: flex;
+    justify-self: center;
+}
+
+#navbar{
+    display: flex;
 }
