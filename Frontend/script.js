@@ -56,7 +56,7 @@ function submitForm(event) {
 
 function renderCards(list) {
     const todoListContainer = document.getElementById("list-container");
-  
+ 
     todoListContainer.innerHTML = "";
   
     list.forEach((item) => {
@@ -65,13 +65,14 @@ function renderCards(list) {
       const card = document.createElement("div");
       card.classList.add("card w-75");
       
+
       card.innerHTML = `
                   <div id=${_id} class="card-body">
                       <h5 class="card-title">${itemName}</h5>
                       <p class="card-text">${dueDate}</p>
                       <div id="car-btn-container"></div>
                   </div>`;
-  
+
       todoListContainer.appendChild(card);
 
       const completBtn = document.createElement("btn");
@@ -79,19 +80,19 @@ function renderCards(list) {
       completeBtn.setAttribute("todoId", _id);
       completeBtn.innerText = "Completed";
       completeBtn.addEventListener("click", handleComplete);
-  
+
       const editBtn = document.createElement("btn");
       editBtn.classList.add("btn", "btn-warning");
       editBtn.setAttribute("todoId", _id);
       editBtn.innerText = "Edit";
       editBtn.addEventListener("click", handleEdit);
-  
+
       const deleteBtn = document.createElement("btn");
       deleteBtn.classList.add("btn", "btn-danger");
       deleteBtn.setAttribute("todoId", _id);
       deleteBtn.innerText = "Delete";
       deleteBtn.addEventListener("click", handleDelete);
-  
+
       document.getElementById(_id).children[2].appendChild(completeBtn);
       document.getElementById(_id).children[2].appendChild(editBtn);
       document.getElementById(_id).children[2].appendChild(deleteBtn);
@@ -121,13 +122,13 @@ function handleEdit(event) {
     const id = event.target.getAttribute("todoId");
     const newItemName = window.prompt("Enter new item name");
     const newDueDate = window.prompt("Enter new due date");
-    
+
     const update = {
       _id: id,
       itemName: newItemName,
       dueDate: newDueDate,
     };
-  
+
     fetch(destinations_url, {
       headers: {
         "Content-Type": "application/json",
@@ -143,10 +144,11 @@ function handleEdit(event) {
 
 function handleDelete(event) {
     const Id = event.target.getAttribute("todoId");
-  
+
     fetch(destinations_url + "/" + todoId, { method: "delete" })
       .then((res) => res.json())
       .then((destinations) => {
         renderCards(destinations);
     });
 }
+
