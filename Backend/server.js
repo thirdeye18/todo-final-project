@@ -11,6 +11,10 @@ dotenv.config({path:'./.env'});
 
 const port = 3000;
 
+// ========================
+// Midleware
+// ========================
+
 //make sure urlencoded before CRUD handelers
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(express.urlencoded({ extended: true }));

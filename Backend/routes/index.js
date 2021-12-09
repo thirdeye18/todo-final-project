@@ -14,18 +14,50 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     const db = client.db('todo-list');
     const items = db.collection('items');
 
+    // ========================
+    // Midleware
+    // ========================
+
     //make sure urlencoded before CRUD handelers
     router.use(bodyParser.urlencoded({ extended: true }));
 
-    router.get('/', (req, res) => {
-      //res.send(__dirname)
-      res.sendFile('/mnt/d/Amazon SDE/2_HTML_CSS/todo-final-project/Frontend/welcome-page.html')
+    // ========================
+    // Routes
+    // ========================
+
+    router.get('/todo', async (req, res) => {
+      const data = await items.find({}).toArray();
+      res.send(data);
     })
 
-    router.post('addItem', (req, res) => {
-      items.insertOne (req.body)
-        .then(result => {
-          res.redirect('/')
+    router.post('/todo', async(req, res) => {
+      const {itemName, dueDate} = req.body
+
+      if(!itemName || name.length === 0) {
+        return res.status(400).json({message: "Need both name and location"})
+      }
+
+      const item = {itemName, dueDate};
+
+      items.insertOne(item)
+        .then(value => {
+          res.redirect(303, '/todo')
+        })
+        .catch(error => console.error(error))
+    })
+
+    router.put('/todo', async(req, res) => {
+      const{_id, itemName, dueDate} = req.body;
+      const newItem = {};
+      if(itemName && name.length !== 0) {
+        newItem.name = itemName;
+      }
+      if(dueDate && dueDate.length !== 0) {
+        newItem.dueDate = dueDate;
+      }
+      items.updateOne({_id: ObjectId(_id)}, {$set: newItem})
+        .then(() => {
+          res.redirect(303, '/todo');
         })
         .catch(error => console.error(error))
     })
@@ -35,7 +67,16 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
         .then(results => {
           console.log(results);
         })
-      .catch(error => console.error(error))
+        .catch(error => console.error(error))
+    })
+
+    router.delete('todo/:id', (req, res) => {
+      const itemId = req.params.id;
+      destinations.deleteOne({_id: ObjectId(destId)})
+        .then(() => {
+          res.redirect(303, '/todo');
+        })
+        .catch(error => console.error(error))
     })
 
   })
