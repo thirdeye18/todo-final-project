@@ -44,7 +44,6 @@ function submitForm(event) {
 }
 
 function renderCards(list) {
-
   const todoListContainer = document.getElementById("list-container");
 
   todoListContainer.innerHTML = "";
@@ -108,7 +107,6 @@ function handleComplete(event) {
 }
 
 function handleEdit(event) {
-
   const id = event.target.getAttribute("todoId");
   const newItemName = window.prompt("Enter new item name");
   const newDueDate = window.prompt("Enter new due date");
@@ -133,7 +131,6 @@ function handleEdit(event) {
 }
 
 function handleDelete(event) {
-
   const Id = event.target.getAttribute("todoId");
 
   fetch(toDo_url + "/" + Id, { method: "delete" })
@@ -142,4 +139,3 @@ function handleDelete(event) {
       renderCards(destinations);
     });
 }
-
