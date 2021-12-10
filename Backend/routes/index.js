@@ -1,11 +1,10 @@
 const router = require('express').Router();
-const bodyParser= require('body-parser');
-//for storing values in .env file and retrieving them
-const dotenv = require('dotenv');
-dotenv.config({path:'./.env'});
+const express = require('express');
 
 const {MongoClient, ObjectId} = require('mongodb');
-const uri = `mongodb+srv://thirdeye18:${process.env.MONGO_PW}@cluster0.opwsp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
+//for debugging need to have hard coded password
+const uri = `mongodb+srv://thirdeye18:jlfXhKJ3so00cL4H@cluster0.opwsp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
 MongoClient.connect(uri, { useUnifiedTopology: true })
   .then(client => {
@@ -19,7 +18,8 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     // ========================
 
     //make sure urlencoded before CRUD handelers
-    router.use(bodyParser.urlencoded({ extended: true }));
+    router.use(express.urlencoded({ extended: true }));
+    router.use(express.json());
 
     // ========================
     // Routes
@@ -31,10 +31,18 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
       res.send(data);
     })
 
+    router.get('/', (req, res) => {
+      items.find().toArray()
+        .then(results => {
+          console.log(results);
+        })
+        .catch(error => console.error(error))
+    })
+
     router.post('/todo', async(req, res) => {
       const {itemName, dueDate, complete} = req.body
 
-      if(!itemName || name.length === 0 || !complete || complete.length ===0) {
+      if(!itemName || itemName.length === 0 || !complete || complete.length ===0) {
         return res.status(400).json({message: "Need name and complete status!"})
       }
 
@@ -46,8 +54,9 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
         item.dueDate = "No date selected";
       }
 
+      //TODO: Value below is not used, why being passed
       items.insertOne(item)
-        .then(value => {
+        .then(() => {
           res.redirect(303, '/todo?complete=false')
         })
         .catch(error => console.error(error))
@@ -56,8 +65,8 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     router.put('/todo', async(req, res) => {
       const{_id, itemName, dueDate, complete} = req.body;
       const newItem = {};
-      if(itemName && name.length !== 0) {
-        newItem.name = itemName;
+      if(itemName && itemName.length !== 0) {
+        newItem.itemName = itemName;
       }
       if(dueDate && dueDate.length !== 0) {
         newItem.dueDate = dueDate;
@@ -72,23 +81,24 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
         .catch(error => console.error(error))
     })
 
-    router.get('/', (req, res) => {
-      items.find().toArray()
-        .then(results => {
-          console.log(results);
-        })
-        .catch(error => console.error(error))
-    })
-
-    router.delete('todo/:id', (req, res) => {
+    router.delete('/todo/:id', (req, res) => {
       const itemId = req.params.id;
-      items.deleteOne({_id: ObjectId(itemId)})
-        .then(() => {
+      items.findOneAndDelete({_id: ObjectId(itemId)})
+        .then((value) => {
           res.redirect(303, '/todo?complete=false');
         })
         .catch(error => console.error(error))
     })
 
+<<<<<<< HEAD
+=======
+
+
+
+
+ 
+
+>>>>>>> 67c01b274ac0e5d52e3a5afb005a3793bdbd26d5
   })
 
   //catching promise error for MongoClient connect
