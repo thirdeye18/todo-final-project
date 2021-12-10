@@ -15,7 +15,7 @@ function handleSign(e) {
   else {
     signBtn.innerText = "Sign In"
     signBtn.className = "btn btn-primary"
-    document.getElementById("list-container") = ""
+    document.getElementById("list-container").innerHTML = ""
   }
 }
 
