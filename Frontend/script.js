@@ -2,15 +2,32 @@ const HEROKU_API_ROOT_URL = "http://localhost:3000";
 const toDo_url = `${HEROKU_API_ROOT_URL}/todo`;
 let completed = "false";
 
-fetch(toDo_url + "?" + `complete=${completed}`)
-  .then((res) => res.json())
-  .then((list) => {
-    renderCards(list);
-  });
+getList(completed);
+
+function getList(completed) {
+  fetch(toDo_url + "?" + `complete=${completed}`)
+    .then((res) => res.json())
+    .then((list) => {
+      renderCards(list);
+    });
+}
 
 document
   .getElementById("form_submit_btn")
   .addEventListener("click", submitForm);
+
+document
+  .getElementById("inProgress")
+  .addEventListener("click", handleInProgress);
+document.getElementById("completed").addEventListener("click", handleCompleted);
+
+function handleInProgress() {
+  getList("false");
+}
+
+function handleCompleted() {
+  getList("true");
+}
 
 function submitForm(event) {
   event.preventDefault();
@@ -49,10 +66,10 @@ function renderCards(list) {
   todoListContainer.innerHTML = "";
 
   list.forEach((entry) => {
-    const { _id, item, dueDate } = entry;
+    const { _id, item, dueDate, complete } = entry;
 
     const card = document.createElement("div");
-    card.className = "card w-75";
+    card.className = "card w-100";
 
     card.innerHTML = `
                   <div id=${_id} class="card-body">
@@ -63,17 +80,22 @@ function renderCards(list) {
 
     todoListContainer.appendChild(card);
 
-    const completeBtn = document.createElement("btn");
-    completeBtn.classList.add("btn", "btn-success");
-    completeBtn.setAttribute("todoId", _id);
-    completeBtn.innerText = "Complete";
-    completeBtn.addEventListener("click", handleComplete);
+    if (complete === "false") {
+      const completeBtn = document.createElement("btn");
+      completeBtn.classList.add("btn", "btn-success");
+      completeBtn.setAttribute("todoId", _id);
+      completeBtn.innerText = "Complete";
+      completeBtn.addEventListener("click", handleComplete);
 
-    const editBtn = document.createElement("btn");
-    editBtn.classList.add("btn", "btn-warning");
-    editBtn.setAttribute("todoId", _id);
-    editBtn.innerText = "Edit";
-    editBtn.addEventListener("click", handleEdit);
+      const editBtn = document.createElement("btn");
+      editBtn.classList.add("btn", "btn-warning");
+      editBtn.setAttribute("todoId", _id);
+      editBtn.innerText = "Edit";
+      editBtn.addEventListener("click", handleEdit);
+      
+      document.getElementById(_id).children[2].appendChild(completeBtn);
+      document.getElementById(_id).children[2].appendChild(editBtn);
+    }
 
     const deleteBtn = document.createElement("btn");
     deleteBtn.classList.add("btn", "btn-danger");
@@ -81,9 +103,9 @@ function renderCards(list) {
     deleteBtn.innerText = "Delete";
     deleteBtn.addEventListener("click", handleDelete);
 
-    document.getElementById(_id).children[2].appendChild(completeBtn);
-    document.getElementById(_id).children[2].appendChild(editBtn);
+    
     document.getElementById(_id).children[2].appendChild(deleteBtn);
+    
   });
 }
 
