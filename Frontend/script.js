@@ -1,8 +1,23 @@
 const HEROKU_API_ROOT_URL = "http://localhost:3000";
 const toDo_url = `${HEROKU_API_ROOT_URL}/todo`;
-let completed = "false";
 
-getList(completed);
+
+document.getElementById("signBtn").addEventListener("click", handleSign)
+
+function handleSign(e) {
+  const signBtn = e.target
+
+  if (signBtn.innerText === "Sign In") {
+      signBtn.innerText = "Sign Out"
+      signBtn.className = "btn btn-danger"
+      getList("false")
+  }
+  else {
+    signBtn.innerText = "Sign In"
+    signBtn.className = "btn btn-primary"
+    document.getElementById("list-container") = ""
+  }
+}
 
 function getList(completed) {
   fetch(toDo_url + "?" + `complete=${completed}`)
