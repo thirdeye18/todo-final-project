@@ -28,6 +28,7 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     router.get('/todo', async (req, res) => {
       const complete = req.query.complete;
       const data = await items.find({complete: complete}).toArray();
+      console.log(data);
       res.send(data);
     })
 
