@@ -28,15 +28,8 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
     router.get('/todo', async (req, res) => {
       const complete = req.query.complete;
       const data = await items.find({complete: complete}).toArray();
+      console.log(data);
       res.send(data);
-    })
-
-    router.get('/', (req, res) => {
-      items.find().toArray()
-        .then(results => {
-          console.log(results);
-        })
-        .catch(error => console.error(error))
     })
 
     router.post('/todo', async(req, res) => {
@@ -89,16 +82,6 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
         })
         .catch(error => console.error(error))
     })
-
-<<<<<<< HEAD
-=======
-
-
-
-
- 
-
->>>>>>> 67c01b274ac0e5d52e3a5afb005a3793bdbd26d5
   })
 
   //catching promise error for MongoClient connect
