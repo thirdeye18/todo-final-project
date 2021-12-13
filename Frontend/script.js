@@ -47,14 +47,14 @@ function handleCompleted() {
 function submitForm(event) {
   event.preventDefault();
 
-  const item = document.getElementById("item").value;
+  const itemName = document.getElementById("item").value;
   const dueDate = document.getElementById("date").value;
 
   document.getElementById("item").value = "";
   document.getElementById("date").value = "";
 
   const toDo = {
-    item,
+    itemName,
     complete: "false",
   };
 
@@ -81,14 +81,14 @@ function renderCards(list) {
   todoListContainer.innerHTML = "";
 
   list.forEach((entry) => {
-    const { _id, item, dueDate, complete } = entry;
+    const { _id, itemName, dueDate, complete } = entry;
 
     const card = document.createElement("div");
     card.className = "card w-100";
 
     card.innerHTML = `
                   <div id=${_id} class="card-body">
-                      <h5 class="card-title">${item}</h5>
+                      <h5 class="card-title">${itemName}</h5>
                       <p class="card-text">${dueDate}</p>
                       <div id="car-btn-container"></div>
                   </div>`;
