@@ -1,50 +1,17 @@
-/* #header{
+#header{
     text-align: center;
-    background-color: darkgray;
+    background-color: black;
     padding: 50px;
 }
 
-body{
-    background-color: lightgray;
+#headerText{
+    color: white;
+    font-weight: bold;
+    margin: 0 auto;
 }
-
-.btn{
-    width: 100px;
-}
-
-.form-control{
-    width: 500px;
-}
-
-#signOutBtn{
-    position: relative;
-    left: 1430px;
-    bottom: 150px;
-}
-
-#logInBtn{
-    position: relative;
-    bottom: 150px; 
-    left: 1426px; 
-
-    color:white;
-}
-
-#navbar{
-    position: relative;
-    bottom: 50px;
-}
-
-.welcome{
-    text-align: center;
-    font-size: 200px;
-} */
-
-#statusButtons{
+#statusBtns{
     display: flex;
-    justify-self: center;
+    display: flex;
+    justify-content: center;
 }
 
-#navbar{
-    display: flex;
-}
