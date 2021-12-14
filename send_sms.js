@@ -4,6 +4,21 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
+const notificationOpts = {
+  toBinding: JSON.stringify({
+    binding_type: 'sms',
+    address: '+13609195808',
+  }),
+  body: 'Knock-Knock! This is your first Notify SMS',
+};
+
+client.notify
+  .services('ISc2a76c4c3433b2760ed8f0428df6e284')
+  .notifications.create(notificationOpts)
+  .then(notification => console.log(notification.sid))
+  .catch(error => console.log(error));
+
+//Calling this function will send an sms
 function sendReminder(cellNumber, message) {
   //this sends the text message
   client.messages
@@ -33,7 +48,3 @@ function compareDates() {
 }
 
 module.exports = sendReminder;
-
-// let myCell = 3609195808;
-// let myMsg = "Testing Message";
-// sendReminder(myCell, myMsg);
