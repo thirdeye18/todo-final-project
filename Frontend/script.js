@@ -1,26 +1,66 @@
 const HEROKU_API_ROOT_URL = "http://localhost:3000";
 const toDo_url = `${HEROKU_API_ROOT_URL}/todo`;
 
+let auth0 = null;
 
-document.getElementById("signBtn").addEventListener("click", handleSign)
+window.onload = async () => {
+  await configureClient();
+  await processLoginState();
+  updateUI();
+};
 
-function handleSign(e) {
-  const signBtn = e.target
+const configureClient = async () => {
+  auth0 = await createAuth0Client({
+    domain: "dev-wb32quj9.us.auth0.com",
+    client_id: "xTz2vpPOEIDCFlWHpltZSZVjep7bvZFG",
+  });
+};
 
-  if (signBtn.innerText === "Sign In") {
-      signBtn.innerText = "Sign Out"
-      signBtn.className = "btn btn-danger"
-      getList("false")
+const processLoginState = async () => {
+  const query = window.location.search;
+  if (query.includes("code=") && query.includes("state=")) {
+    await auth0.handleRedirectCallback();
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
-  else {
-    signBtn.innerText = "Sign In"
-    signBtn.className = "btn btn-primary"
-    document.getElementById("list-container").innerHTML = ""
+};
+
+const updateUI = async () => {
+  const isAuthenticated = await auth0.isAuthenticated();
+
+  if (isAuthenticated) {
+    signBtn.innerText = "Sign Out";
+    signBtn.className = "btn btn-danger";
+    signBtn.setAttribute("onclick", "logout()");
+    const user = await auth0.getUser();
+    var userId = user.sub;
+    sessionStorage.setItem("userId", userId);
+    getList("false");
+  } else {
+    signBtn.innerText = "Sign In";
+    signBtn.className = "btn btn-primary";
+    document.getElementById("list-container").innerHTML = "";
+    sessionStorage.removeItem("userId");
   }
-}
+};
+
+const login = async () => {
+  await auth0.loginWithRedirect({
+    redirect_uri: window.location.href,
+  });
+};
+
+const logout = () => {
+  auth0.logout({
+    returnTo: window.location.href,
+  });
+};
 
 function getList(completed) {
-  fetch(toDo_url + "?" + `complete=${completed}`)
+  fetch(
+    `${toDo_url}?complete=${completed}&userId=${sessionStorage.getItem(
+      "userId"
+    )}`
+  )
     .then((res) => res.json())
     .then((list) => {
       renderCards(list);
@@ -49,6 +89,7 @@ function submitForm(event) {
 
   const itemName = document.getElementById("item").value;
   const dueDate = document.getElementById("date").value;
+  const userId = sessionStorage.getItem("userId");
 
   document.getElementById("item").value = "";
   document.getElementById("date").value = "";
@@ -56,6 +97,7 @@ function submitForm(event) {
   const toDo = {
     itemName,
     complete: "false",
+    userId,
   };
 
   if (dueDate && dueDate.length !== 0) {
@@ -107,7 +149,7 @@ function renderCards(list) {
       editBtn.setAttribute("todoId", _id);
       editBtn.innerText = "Edit";
       editBtn.addEventListener("click", handleEdit);
-      
+
       document.getElementById(_id).children[2].appendChild(completeBtn);
       document.getElementById(_id).children[2].appendChild(editBtn);
     }
@@ -118,17 +160,17 @@ function renderCards(list) {
     deleteBtn.innerText = "Delete";
     deleteBtn.addEventListener("click", handleDelete);
 
-    
     document.getElementById(_id).children[2].appendChild(deleteBtn);
-    
   });
 }
 
 function handleComplete(event) {
   const id = event.target.getAttribute("todoId");
+  const userId = sessionStorage.getItem("userId");
   const update = {
     _id: id,
     complete: "true",
+    userId,
   };
   fetch(toDo_url, {
     headers: {
@@ -147,11 +189,13 @@ function handleEdit(event) {
   const id = event.target.getAttribute("todoId");
   const newItemName = window.prompt("Enter new item name");
   const newDueDate = window.prompt("Enter new due date");
+  const userId = sessionStorage.getItem("userId");
 
   const update = {
     _id: id,
     itemName: newItemName,
     dueDate: newDueDate,
+    userId,
   };
 
   fetch(toDo_url, {
@@ -168,11 +212,23 @@ function handleEdit(event) {
 }
 
 function handleDelete(event) {
-  const Id = event.target.getAttribute("todoId");
+  const id = event.target.getAttribute("todoId");
+  const userId = sessionStorage.getItem("userId");
 
-  fetch(toDo_url + "/" + Id, { method: "delete" })
+  const itemToDelete = {
+    _id: id,
+    userId,
+  };
+
+  fetch(toDo_url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "DELETE",
+    body: JSON.stringify(itemToDelete),
+  })
     .then((res) => res.json())
-    .then((destinations) => {
-      renderCards(destinations);
+    .then((list) => {
+      renderCards(list);
     });
 }

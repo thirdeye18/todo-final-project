@@ -27,19 +27,19 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
 
     router.get('/todo', async (req, res) => {
       const complete = req.query.complete;
-      const data = await items.find({complete: complete}).toArray();
-      console.log(data);
+      const userId = req.query.userId
+      const data = await items.find({complete: complete, userId: userId }).toArray();
       res.send(data);
     })
 
     router.post('/todo', async(req, res) => {
-      const {itemName, dueDate, complete} = req.body
+      const {itemName, dueDate, complete, userId } = req.body
 
-      if(!itemName || itemName.length === 0 || !complete || complete.length ===0) {
+      if(!itemName || itemName.length === 0 || !complete || complete.length ===0 || !userId || userId.length === 0) {
         return res.status(400).json({message: "Need name and complete status!"})
       }
 
-      const item = {itemName, complete};
+      const item = { itemName, complete, userId };
 
       if(dueDate && dueDate.length !== 0) {
         item.dueDate = dueDate;
@@ -50,13 +50,13 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
       //TODO: Value below is not used, why being passed
       items.insertOne(item)
         .then(() => {
-          res.redirect(303, '/todo?complete=false')
+          res.redirect(303, `/todo?complete=false&userId=${userId}`);
         })
         .catch(error => console.error(error))
     })
 
     router.put('/todo', async(req, res) => {
-      const{_id, itemName, dueDate, complete} = req.body;
+      const{_id, itemName, dueDate, complete, userId } = req.body;
       const newItem = {};
       if(itemName && itemName.length !== 0) {
         newItem.itemName = itemName;
@@ -69,20 +69,29 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
       }
       items.updateOne({_id: ObjectId(_id)}, {$set: newItem})
         .then(() => {
-          res.redirect(303, '/todo?complete=false');
+          res.redirect(303, `/todo?complete=false&userId=${userId}`);
         })
         .catch(error => console.error(error))
     })
 
     router.delete('/todo/:id', (req, res) => {
-      const itemId = req.params.id;
-      items.findOneAndDelete({_id: ObjectId(itemId)})
-        .then((value) => {
-          res.redirect(303, '/todo?complete=false');
-        })
-        .catch(error => console.error(error))
-    })
+      const { _id, userId } = req.body;
+
+    itemToDelete = await todoList.find({_id: ObjectId(_id)}).toArray();
+   
+    if(itemToDelete[0].complete === "false"){
+      todoList.deleteOne({ _id: ObjectId(_id) }).then(() => {
+        res.redirect(303, `/todo?complete=false&userId=${userId}`);
+      })
+      .catch(error => console.error(error))
+    } else {
+      todoList.deleteOne({ _id: ObjectId(_id) }).then(() => {
+        res.redirect(303, `/todo?complete=true&userId=${userId}`);
+      })
+      .catch(error => console.error(error));
+    }
   })
+})
 
   //catching promise error for MongoClient connect
   .catch(error => { console.error(error) });
