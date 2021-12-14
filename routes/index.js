@@ -74,7 +74,7 @@ MongoClient.connect(uri, { useUnifiedTopology: true })
         .catch(error => console.error(error))
     })
 
-    router.delete('/todo/:id', async (req, res) => {
+    router.delete('/todo', async (req, res) => {
       const { _id, userId } = req.body;
 
     itemToDelete = await todoList.find({_id: ObjectId(_id)}).toArray();
